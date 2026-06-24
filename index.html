@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bulldog Estúdio — Inventário</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Barlow+Condensed:wght@700;800&display=swap');
+
+  :root {
+    --black:   #1a1a1a;
+    --dark:    #2b2b2b;
+    --header:  #4d4d4d;
+    --header-dark: #3c3c3c;
+    --mid:     #555555;
+    --muted:   #b5b5b5;
+    --border:  #d0d0d0;
+    --light:   #f0f0f0;
+    --off-white: #f7f7f7;
+    --white:   #ffffff;
+    --accent:  #3a3a3a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--off-white);
+    color: var(--black);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER (logo area, in white, so the logo is not masked) ── */
+  header {
+    background: var(--white);
+    padding: 28px 48px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-bottom: 3px solid var(--border);
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-svg { width: 64px; height: 64px; flex-shrink: 0; }
+
+  .header-title {
+    color: var(--black);
+  }
+
+  .header-title h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .header-title span {
+    font-size: 0.68rem;
+    letter-spacing: 0.35em;
+    color: var(--mid);
+    text-transform: uppercase;
+    font-weight: 400;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .header-right {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .header-right p {
+    color: var(--mid);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+  }
+
+  .header-right input#today-date {
+    color: var(--black);
+    font-size: 1rem;
+    font-weight: 600;
+    display: block;
+    margin-top: 2px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    font-family: 'Inter', sans-serif;
+    padding: 2px 0;
+    outline: none;
+  }
+
+  .header-right input#today-date:focus {
+    border-bottom: 1px solid var(--mid);
+  }
+
+  /* ── NAV (switches sections within the same page) ── */
+  nav.page-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 48px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  nav.page-nav .nav-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--mid);
+    padding: 8px 16px;
+    border-radius: 3px;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    transition: background .15s, color .15s, border-color .15s;
+  }
+
+  nav.page-nav .nav-btn:hover {
+    border-color: var(--header);
+    color: var(--black);
+    background: var(--light);
+  }
+
+  nav.page-nav .nav-btn.nav-active {
+    background: var(--header);
+    border-color: var(--header);
+    color: var(--white);
+  }
+
+  nav.page-nav .nav-btn-total {
+    margin-left: auto;
+    background: var(--black);
+    border-color: var(--black);
+    color: var(--white);
+  }
+
+  nav.page-nav .nav-btn-total:hover {
+    background: var(--dark);
+    border-color: var(--dark);
+    color: var(--white);
+  }
+
+  nav.page-nav .nav-btn-total.nav-active {
+    background: var(--dark);
+    border-color: var(--dark);
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 1300px;
+    margin: 40px auto;
+    padding: 0 32px 80px;
+  }
+
+  .section-block { display: none; }
+  .section-block.section-active { display: block; }
+
+  .section-block {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 48px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+
+  .section-header {
+    background: var(--header);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-dot {
+    width: 10px; height: 10px;
+    background: var(--white);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .section-header h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .section-header .item-count {
+    margin-left: auto;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── TABLE ── */
+  .inv-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .inv-table thead tr {
+    background: var(--light);
+    border-bottom: 2px solid var(--border);
+  }
+
+  .inv-table th {
+    padding: 12px 14px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--mid);
+    text-align: left;
+  }
+
+  .inv-table th.num { text-align: center; width: 48px; }
+  .inv-table th.col-objeto  { width: 40%; }
+  .inv-table th.col-qtd     { width: 80px; text-align: center; }
+  .inv-table th.col-valor   { width: 120px; text-align: right; }
+  .inv-table th.col-valor-total { width: 130px; text-align: right; }
+  .inv-table th.col-foto    { width: 120px; text-align: center; }
+  .inv-table th.col-obs     { width: 14%; }
+
+  .inv-table tbody tr:nth-child(even) { background: var(--off-white); }
+  .inv-table tbody tr:hover { background: #ebebeb; }
+
+  .inv-table td {
+    padding: 0;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .row-num {
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--mid);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 0 8px;
+    user-select: none;
+    width: 48px;
+  }
+
+  .inv-table td input,
+  .inv-table td textarea {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.84rem;
+    color: var(--black);
+    padding: 10px 14px;
+    outline: none;
+    resize: none;
+    line-height: 1.4;
+  }
+
+  .inv-table td input::placeholder,
+  .inv-table td textarea::placeholder {
+    color: #c0c0c0;
+  }
+
+  .inv-table td input:focus,
+  .inv-table td textarea:focus {
+    background: #fff8e1;
+    box-shadow: inset 0 0 0 2px #d4c060;
+  }
+
+  .inv-table td.col-qtd input {
+    text-align: center;
+  }
+
+  .inv-table td.col-valor input {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .inv-table td.col-valor-total {
+    text-align: right;
+    padding: 10px 14px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--black);
+  }
+
+  /* ── OBJETO + LUPA ── */
+  .objeto-cell {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .objeto-cell textarea {
+    flex: 1;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow: hidden;
+    min-height: 40px;
+  }
+
+  .objeto-cell .search-btn,
+  .objeto-cell .delete-btn {
+    margin-top: 6px;
+  }
+
+  .search-btn {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    border: none;
+    background: var(--light);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, color .15s;
+  }
+
+  .search-btn:hover {
+    background: var(--header);
+    color: var(--white);
+  }
+
+  .delete-btn {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    border: none;
+    background: var(--light);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, color .15s;
+  }
+
+  .delete-btn:hover {
+    background: #b03a3a;
+    color: var(--white);
+  }
+
+  /* ── PHOTO CELL ── */
+  .col-foto {
+    text-align: center;
+    padding: 8px;
+  }
+
+  .photo-box {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto;
+    border: 1.5px dashed var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    background: var(--off-white);
+    position: relative;
+    transition: border-color .15s, background .15s;
+  }
+
+  .photo-box:hover {
+    border-color: var(--mid);
+    background: var(--light);
+  }
+
+  .photo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-box .photo-plus {
+    font-size: 1.3rem;
+    color: var(--mid);
+    line-height: 1;
+  }
+
+  .photo-box .photo-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    background: rgba(26,26,26,.75);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .photo-input { display: none; }
+
+  /* ── TOTAL ROW ── */
+  .total-row {
+    background: var(--black) !important;
+    border-top: 3px solid var(--dark);
+  }
+
+  .total-row td {
+    border-bottom: none;
+    padding: 14px 14px;
+    color: var(--white);
+  }
+
+  .total-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: right;
+    padding-right: 14px;
+  }
+
+  .total-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--white);
+    text-align: right;
+    padding-right: 14px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ── GRAND TOTAL CARD ── */
+  .grand-total-wrap {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .grand-total-card {
+    background: var(--black);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 20px 36px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    min-width: 360px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  }
+
+  .grand-total-card .gt-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .grand-total-card .gt-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── PRINT BUTTON ── */
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+    gap: 12px;
+  }
+
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: none;
+    transition: background .15s, color .15s;
+  }
+
+  .btn-dark {
+    background: var(--black);
+    color: var(--white);
+  }
+  .btn-dark:hover { background: var(--dark); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--black);
+    border: 1.5px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--black); background: var(--light); }
+
+  @media print {
+    header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    nav.page-nav { display: none; }
+    .toolbar { display: none; }
+    .section-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .total-row { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .grand-total-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: white; }
+    .section-block { display: block !important; }
+    tr.print-empty-row { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="header-title">
+      <h1>Bulldog</h1>
+      <span>Estúdio</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <p>Controle de Inventário</p>
+    <input type="date" id="today-date" oninput="saveDate(this.value)">
+  </div>
+</header>
+
+<nav class="page-nav" id="page-nav"></nav>
+
+<main>
+  <div class="toolbar">
+    <button class="btn btn-dark" id="btn-save" onclick="saveAllNow()">💾 Salvar</button>
+    <button class="btn btn-dark" onclick="window.print()">↓ Imprimir / Exportar PDF</button>
+    <button class="btn btn-outline" onclick="exportExcel()">⇩ Exportar Excel</button>
+  </div>
+
+  <div id="sections-container"></div>
+
+  <!-- ── GRAND TOTAL ── -->
+  <div class="grand-total-wrap">
+    <div class="grand-total-card">
+      <div>
+        <div class="gt-label">Total Geral do Inventário</div>
+      </div>
+      <div class="gt-value" id="grand-total">R$ 0,00</div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://lbjjijavspuofrvoteyx.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_QXSm5MEwRwVim2rY0gp4gw_K2jSnjRz';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const ROWS_PER_SECTION = 200;
+
+  const SECTIONS = [
+  {
+    "id": "hall",
+    "name": "Hall de Entrada"
+  },
+  {
+    "id": "quarto",
+    "name": "Quarto de Equipamentos"
+  },
+  {
+    "id": "escritorio1",
+    "name": "Escritório 1º Andar"
+  },
+  {
+    "id": "estudio",
+    "name": "Estúdio"
+  },
+  {
+    "id": "hall2",
+    "name": "Hall 2º Andar"
+  },
+  {
+    "id": "camarim",
+    "name": "Camarim"
+  },
+  {
+    "id": "escritorio2",
+    "name": "Escritório 2º Andar"
+  },
+  {
+    "id": "producao",
+    "name": "Quarto de Produção"
+  },
+  {
+    "id": "jardim",
+    "name": "Jardim"
+  },
+  {
+    "id": "gourmet",
+    "name": "Rooftop"
+  }
+];
+
+  // ── Date (editable, persisted in Supabase)
+  async function saveDate(value) {
+    await sb.from('config').upsert({ key: 'date', value });
+  }
+
+  async function loadDate() {
+    const input = document.getElementById('today-date');
+    const { data } = await sb.from('config').select('value').eq('key', 'date').maybeSingle();
+    if (data && data.value) {
+      input.value = data.value;
+    } else {
+      const d = new Date();
+      const iso = d.toISOString().slice(0, 10);
+      input.value = iso;
+      saveDate(iso);
+    }
+  }
+
+  // ── Nav (switches the visible section within this same page)
+  function buildNav() {
+    const nav = document.getElementById('page-nav');
+    SECTIONS.forEach((sec, idx) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'nav-btn' + (idx === 0 ? ' nav-active' : '');
+      btn.textContent = sec.name;
+      btn.dataset.target = sec.id;
+      btn.onclick = () => showSection(sec.id);
+      nav.appendChild(btn);
+    });
+
+    const totalBtn = document.createElement('button');
+    totalBtn.type = 'button';
+    totalBtn.className = 'nav-btn nav-btn-total';
+    totalBtn.textContent = 'Total Geral do Patrimônio';
+    totalBtn.dataset.target = 'totais';
+    totalBtn.onclick = () => showSection('totais');
+    nav.appendChild(totalBtn);
+  }
+
+  function showSection(id) {
+    document.querySelectorAll('.section-block').forEach(el => {
+      el.classList.toggle('section-active', el.id === `section-${id}`);
+    });
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.classList.toggle('nav-active', btn.dataset.target === id);
+    });
+    if (id === 'totais') refreshTotaisOverview();
+  }
+
+  // ── Totais overview: lists every section's total plus the grand total (patrimônio total)
+  function buildTotaisOverview() {
+    const container = document.getElementById('sections-container');
+    const block = document.createElement('div');
+    block.className = 'section-block';
+    block.id = 'section-totais';
+    block.innerHTML = `
+      <div class="section-header">
+        <div class="section-dot"></div>
+        <h2>Total Geral do Patrimônio</h2>
+      </div>
+      <table class="inv-table">
+        <thead>
+          <tr>
+            <th>Local</th>
+            <th class="col-valor">Total (R$)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-totais"></tbody>
+        <tfoot>
+          <tr class="total-row">
+            <td class="total-label">Patrimônio Total</td>
+            <td class="total-value" id="total-patrimonio">R$ 0,00</td>
+          </tr>
+        </tfoot>
+      </table>
+    `;
+    container.appendChild(block);
+  }
+
+  function refreshTotaisOverview() {
+    const tbody = document.getElementById('tbody-totais');
+    tbody.innerHTML = '';
+    SECTIONS.forEach(sec => {
+      const totalEl = document.getElementById(`total-${sec.id}`);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="padding:12px 14px;">${sec.name}</td>
+        <td class="col-valor" style="padding:12px 14px; text-align:right; font-variant-numeric: tabular-nums;">${totalEl ? totalEl.textContent : 'R$ 0,00'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('total-patrimonio').textContent = document.getElementById('grand-total').textContent;
+  }
+
+  // ── Build section blocks
+  function buildSections() {
+    const container = document.getElementById('sections-container');
+    SECTIONS.forEach((sec, idx) => {
+      const block = document.createElement('div');
+      block.className = 'section-block' + (idx === 0 ? ' section-active' : '');
+      block.id = `section-${sec.id}`;
+      block.innerHTML = `
+        <div class="section-header">
+          <div class="section-dot"></div>
+          <h2>${sec.name}</h2>
+          <span class="item-count">${ROWS_PER_SECTION} linhas</span>
+        </div>
+        <table class="inv-table">
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th class="col-objeto">Objeto</th>
+              <th class="col-qtd">Qtd.</th>
+              <th class="col-valor">Valor Unitário (R$)</th>
+              <th class="col-valor-total">Valor Total (R$)</th>
+              <th class="col-foto">Foto</th>
+              <th class="col-obs">Observação</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-${sec.id}"></tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="4" class="total-label">Total — ${sec.name}</td>
+              <td class="total-value" id="total-${sec.id}">R$ 0,00</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+      container.appendChild(block);
+      buildRows(`tbody-${sec.id}`, sec.id, ROWS_PER_SECTION);
+    });
+  }
+
+  // ── Build rows
+  function buildRows(tbodyId, prefix, count) {
+    const tbody = document.getElementById(tbodyId);
+    for (let i = 1; i <= count; i++) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="row-num">${String(i).padStart(2,'0')}</td>
+        <td class="col-objeto">
+          <div class="objeto-cell">
+            <button type="button" class="search-btn" title="Pesquisar preço médio usado de mercado" onclick="searchObjeto(this)">🔍</button>
+            <button type="button" class="delete-btn" title="Apagar item" data-section="${prefix}" data-row="${i}" onclick="deleteItem(this)">🗑️</button>
+            <textarea rows="1" placeholder="Nome do objeto" data-section="${prefix}" data-row="${i}" data-field="obj" oninput="autoGrow(this); save('${prefix}',${i},'obj',this.value)"></textarea>
+          </div>
+        </td>
+        <td class="col-qtd"><input type="number" min="0" placeholder="0" data-section="${prefix}" data-row="${i}" data-field="qtd" oninput="save('${prefix}',${i},'qtd',this.value)"></td>
+        <td class="col-valor"><input type="text" placeholder="0,00" title="Valor entre 0,00 e 100.000,00" data-section="${prefix}" data-row="${i}" data-field="val" oninput="handleValor(this,'${prefix}',${i})" onblur="clampValor(this,'${prefix}',${i})"></td>
+        <td class="col-valor-total"><span class="valor-total-display" data-section="${prefix}" data-row="${i}">R$ 0,00</span></td>
+        <td class="col-foto">
+          <div class="photo-box" data-section="${prefix}" data-row="${i}" onclick="triggerPhoto(this)">
+            <span class="photo-plus">+</span>
+            <input type="file" class="photo-input" accept="image/*" data-section="${prefix}" data-row="${i}" onchange="handlePhoto(this)">
+          </div>
+        </td>
+        <td class="col-obs"><input type="text" placeholder="Observação" data-section="${prefix}" data-row="${i}" data-field="obs" oninput="save('${prefix}',${i},'obs',this.value)"></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // ── Search button: opens a "used item" market average price search for the typed object name
+  function searchObjeto(btn) {
+    const textarea = btn.closest('.objeto-cell').querySelector('textarea');
+    const term = (textarea.value || '').trim();
+    if (!term) {
+      alert('Digite o nome do objeto antes de pesquisar.');
+      return;
+    }
+    const url = 'https://www.google.com/search?q=' + encodeURIComponent(term + ' preço médio usado de mercado');
+    window.open(url, '_blank');
+  }
+
+  // ── Auto-grow the Objeto textarea so long text is fully visible (and prints in full)
+  function autoGrow(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  // ── Delete button: removes a single item's data after explicit confirmation
+  async function deleteItem(btn) {
+    if (!confirm('Deletar o item permanentemente?')) return;
+    const section = btn.dataset.section;
+    const row = btn.dataset.row;
+    const tr = btn.closest('tr');
+    tr.querySelectorAll('input[type="text"], input[type="number"]').forEach(i => i.value = '');
+    tr.querySelectorAll('textarea').forEach(t => { t.value = ''; autoGrow(t); });
+    const box = tr.querySelector('.photo-box');
+    if (box) renderPhoto(box, null);
+    recalc(section);
+    await sb.from('itens').delete().eq('section', section).eq('row', Number(row));
+  }
+
+  // ── Storage helpers (debounced writes to Supabase, keyed per row)
+  const saveTimers = {};
+  const pendingData = {};
+
+  function save(section, row, field, value) {
+    const rowKey = `${section}-${row}`;
+    pendingData[rowKey] = pendingData[rowKey] || { section, row: Number(row) };
+    pendingData[rowKey][field] = value;
+    if (saveTimers[rowKey]) clearTimeout(saveTimers[rowKey]);
+    saveTimers[rowKey] = setTimeout(() => flushRow(rowKey), 500);
+    recalc(section);
+  }
+
+  async function flushRow(rowKey) {
+    const data = pendingData[rowKey];
+    delete saveTimers[rowKey];
+    if (!data) return;
+    delete pendingData[rowKey];
+    await sb.from('itens').upsert(data, { onConflict: 'section,row' });
+  }
+
+  async function saveAllNow() {
+    const btn = document.getElementById('btn-save');
+    const originalText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Salvando...';
+    try {
+      const keys = Object.keys(saveTimers);
+      keys.forEach(rowKey => clearTimeout(saveTimers[rowKey]));
+      await Promise.all(Object.keys(pendingData).map(rowKey => flushRow(rowKey)));
+      btn.textContent = '✔ Salvo!';
+    } catch (err) {
+      console.error(err);
+      btn.textContent = '✖ Erro ao salvar';
+    } finally {
+      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
+    }
+  }
+
+  function handleValor(input, section, row) {
+    save(section, row, 'val', input.value);
+  }
+
+  // ── Clamp the typed value to the 0 – 100.000,00 range on blur
+  function clampValor(input, section, row) {
+    let n = parseValor(input.value);
+    if (n < 0) n = 0;
+    if (n > 100000) n = 100000;
+    const formatted = n.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+    input.value = input.value.trim() === '' ? '' : formatted;
+    save(section, row, 'val', input.value);
+  }
+
+  function parseValor(str) {
+    if (!str) return 0;
+    let s = str.replace(/\s/g,'');
+    if (s.includes(',') && s.includes('.')) {
+      s = s.replace(/\./g,'').replace(',','.');
+    } else {
+      s = s.replace(',','.');
+    }
+    return parseFloat(s) || 0;
+  }
+
+  function formatBRL(n) {
+    return 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function recalc(section) {
+    let total = 0;
+    const tbody = document.getElementById(`tbody-${section}`);
+    tbody.querySelectorAll('tr').forEach(tr => {
+      const qtdInp = tr.querySelector('input[data-field="qtd"]');
+      const valInp = tr.querySelector('input[data-field="val"]');
+      const qtd = parseFloat((qtdInp.value || '0').replace(',', '.')) || 0;
+      const val = parseValor(valInp.value);
+      const rowTotal = qtd * val;
+      const display = tr.querySelector('.valor-total-display');
+      if (display) display.textContent = formatBRL(rowTotal);
+      total += rowTotal;
+    });
+    document.getElementById(`total-${section}`).textContent = formatBRL(total);
+    recalcGrand();
+  }
+
+  function recalcGrand() {
+    let grand = 0;
+    SECTIONS.forEach(sec => {
+      const el = document.getElementById(`total-${sec.id}`);
+      if (el) grand += parseValor(el.textContent.replace('R$','').trim());
+    });
+    document.getElementById('grand-total').textContent = formatBRL(grand);
+  }
+
+  // ── Photo handling
+  function triggerPhoto(box) {
+    box.querySelector('.photo-input').click();
+  }
+
+  function handlePhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = async () => {
+        const maxDim = 800;
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          const scale = maxDim / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        const section = input.dataset.section;
+        const row = input.dataset.row;
+        renderPhoto(input.closest('.photo-box'), dataUrl);
+        await sb.from('itens').upsert({ section, row: Number(row), foto: dataUrl }, { onConflict: 'section,row' });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function removePhoto(e, section, row) {
+    e.stopPropagation();
+    const box = document.querySelector(`.photo-box[data-section="${section}"][data-row="${row}"]`);
+    renderPhoto(box, null);
+    await sb.from('itens').upsert({ section, row: Number(row), foto: null }, { onConflict: 'section,row' });
+  }
+
+  function renderPhoto(box, dataUrl) {
+    const section = box.dataset.section;
+    const row = box.dataset.row;
+    if (dataUrl) {
+      box.innerHTML = `
+        <img src="${dataUrl}" alt="Foto do item">
+        <div class="photo-remove" onclick="removePhoto(event,'${section}',${row})">×</div>
+        <input type="file" class="photo-input" accept="image/*" data-section="${section}" data-row="${row}" onchange="handlePhoto(this)">
+      `;
+    } else {
+      box.innerHTML = `
+        <span class="photo-plus">+</span>
+        <input type="file" class="photo-input" accept="image/*" data-section="${section}" data-row="${row}" onchange="handlePhoto(this)">
+      `;
+    }
+  }
+
+  // ── Load all items from Supabase
+  async function loadAll() {
+    const { data, error } = await sb.from('itens').select('*');
+    if (error) {
+      console.error('Erro ao carregar itens do Supabase:', error);
+      return;
+    }
+    (data || []).forEach(item => {
+      ['obj','qtd','val','obs'].forEach(f => {
+        const val = item[f];
+        if (val !== null && val !== undefined && val !== '') {
+          const selector = f === 'obj' ? 'textarea' : 'input';
+          const inp = document.querySelector(`${selector}[data-section="${item.section}"][data-row="${item.row}"][data-field="${f}"]`);
+          if (inp) {
+            inp.value = val;
+            if (f === 'obj') autoGrow(inp);
+          }
+        }
+      });
+      if (item.foto) {
+        const box = document.querySelector(`.photo-box[data-section="${item.section}"][data-row="${item.row}"]`);
+        if (box) renderPhoto(box, item.foto);
+      }
+    });
+    SECTIONS.forEach(sec => recalc(sec.id));
+  }
+
+  // ── Hide rows with no data before printing, so blank rows don't waste paper
+  function rowHasData(tr) {
+    const ta = tr.querySelector('textarea');
+    if (ta && ta.value.trim() !== '') return true;
+    const inputs = tr.querySelectorAll('input[type="text"], input[type="number"]');
+    for (const inp of inputs) {
+      if (inp.value && inp.value.trim() !== '') return true;
+    }
+    return !!tr.querySelector('.photo-box img');
+  }
+
+  function prepareForPrint() {
+    document.querySelectorAll('#sections-container tbody tr').forEach(tr => {
+      tr.classList.toggle('print-empty-row', !rowHasData(tr));
+    });
+  }
+  window.addEventListener('beforeprint', prepareForPrint);
+
+  // ── Export filled-in data to an Excel workbook (one sheet per local + a totals sheet)
+  function exportExcel() {
+    const wb = XLSX.utils.book_new();
+
+    SECTIONS.forEach(sec => {
+      const tbody = document.getElementById(`tbody-${sec.id}`);
+      const rows = [['#', 'Objeto', 'Qtd.', 'Valor Unitário (R$)', 'Valor Total (R$)', 'Observação']];
+      tbody.querySelectorAll('tr').forEach(tr => {
+        if (!rowHasData(tr)) return;
+        const num = tr.querySelector('.row-num').textContent;
+        const obj = tr.querySelector('textarea').value;
+        const qtd = tr.querySelector('input[data-field="qtd"]').value;
+        const val = tr.querySelector('input[data-field="val"]').value;
+        const valTotal = tr.querySelector('.valor-total-display').textContent;
+        const obs = tr.querySelector('input[data-field="obs"]').value;
+        rows.push([num, obj, qtd, val, valTotal, obs]);
+      });
+      const totalText = document.getElementById(`total-${sec.id}`).textContent;
+      rows.push(['', '', '', '', '', '']);
+      rows.push(['', '', '', 'Total', totalText, '']);
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = [{wch:5},{wch:40},{wch:8},{wch:16},{wch:16},{wch:30}];
+      XLSX.utils.book_append_sheet(wb, ws, sec.name.substring(0, 31));
+    });
+
+    const totalsRows = [['Local', 'Total (R$)']];
+    SECTIONS.forEach(sec => {
+      const totalEl = document.getElementById(`total-${sec.id}`);
+      totalsRows.push([sec.name, totalEl ? totalEl.textContent : 'R$ 0,00']);
+    });
+    totalsRows.push(['Patrimônio Total', document.getElementById('grand-total').textContent]);
+    const wsTotais = XLSX.utils.aoa_to_sheet(totalsRows);
+    wsTotais['!cols'] = [{wch:30},{wch:16}];
+    XLSX.utils.book_append_sheet(wb, wsTotais, 'Totais');
+
+    const date = document.getElementById('today-date').value || new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `Bulldog_Inventario_${date}.xlsx`);
+  }
+
+  buildNav();
+  buildSections();
+  buildTotaisOverview();
+  loadDate();
+  loadAll();
+</script>
+</body>
+</html>
